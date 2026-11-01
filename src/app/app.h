@@ -14,6 +14,7 @@
 #include "settings/settings_model.h"
 #include "theme/theme.h"
 #include "ui/layout.h"
+#include "ui/widgets.h"
 
 typedef struct renderer      renderer;
 typedef struct texture_cache texture_cache;

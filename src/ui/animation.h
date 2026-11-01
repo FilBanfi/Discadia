@@ -20,9 +20,11 @@ float anim_ease_out_cubic(float t);
 /* Clamp helper. */
 float anim_clamp(float v, float lo, float hi);
 
-#endif /* DISCADIA_ANIMATION_H */
-
 /* Ease-out quadratic. */
 float anim_ease_out_quad(float t);
-/* Triangle wave: 0 -> 1 -> 0 across t in [0..1]. */
-float anim_pingpong(float t);
+
+/* Triangle wave over a period: ramps 0->1->0 as `age_ms` advances every
+ * `period_ms`. `age_ms` may be any unbounded elapsed-time value. */
+float anim_pingpong_ms(float age_ms, float period_ms);
+
+#endif /* DISCADIA_ANIMATION_H */
