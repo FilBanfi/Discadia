@@ -119,3 +119,9 @@ SDL_Color theme_color(const discadia_theme *t, int id);
 const char *theme_sound_path(const discadia_theme *t, const char *logical_name);
 
 #endif /* DISCADIA_THEME_H */
+
+/* Asset resolution helpers (theme_assets.c). */
+int  theme_resolve_asset(const discadia_theme *t, const char *rel,
+                         char *dst, size_t dst_size);
+void theme_frame_overlay_path(const discadia_theme *t, char *dst, size_t sz);
+int  theme_has_sound_file(const discadia_theme *t, const char *logical_name);

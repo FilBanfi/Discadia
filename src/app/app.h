@@ -1,6 +1,8 @@
 #ifndef DISCADIA_APP_H
 #define DISCADIA_APP_H
 
+#define DISCADIA_VERSION "1.0.0"
+
 /*
  * Application context: the single object threaded through every module.
  * Holds runtime settings, resolved data paths, theme, locale, library,
@@ -11,6 +13,7 @@
 #include <SDL.h>
 #include "settings/settings_model.h"
 #include "theme/theme.h"
+#include "ui/layout.h"
 
 typedef struct renderer      renderer;
 typedef struct texture_cache texture_cache;
@@ -20,6 +23,7 @@ typedef struct library       library;
 typedef struct disc_manager  disc_manager;
 typedef struct engine_registry engine_registry;
 typedef struct toast_queue   toast_queue;
+typedef struct launcher        launcher;
 typedef struct app_state     app_state;
 
 typedef enum app_screen {
@@ -77,6 +81,7 @@ void app_destroy(app *a);
 /* ---- services used by screens ---- */
 void app_set_screen(app *a, app_screen_t s);
 app_screen_t app_current_screen(const app *a);
+const screen_vtable *app_screen_table(app_screen_t s);
 const char *app_data_dir(const app *a);
 const char *app_cache_dir(const app *a);
 engine_registry *app_engines(const app *a);
@@ -89,13 +94,34 @@ texture_cache *app_texcache(const app *a);
 font_cache *app_fontcache(const app *a);
 settings_model *app_settings(app *a);
 discadia_theme *app_theme(app *a);
+layout *app_layout(app *a);
+launcher *app_launcher(app *a);
+const char *app_saves_base(app *a);
+const char *app_version(void);
 float app_carousel_pos(const app *a);      /* animated carousel position */
+void  app_set_carousel_pos(app *a, float p);
 int   app_selected_item(const app *a);     /* logical selected index     */
+void  app_set_selected(app *a, int idx);
 int   app_launch_error(const app *a);      /* pending launch failed?     */
+void  app_set_launch_error(app *a, int e);
+const char *app_launch_title(app *a);
+void  app_set_launch_title(app *a, const char *t);
 nav_request_t app_take_pending_nav(app *a);/* menu-driven transitions    */
+void  app_request_nav(app *a, nav_request_t n);
+void  app_quit(app *a);                    /* request main-loop exit     */
 void  app_play_sound(app *a, const char *logical_name);
 void  app_rescan_library(app *a);
 void  app_reapply_theme(app *a);           /* after theme change         */
+void  app_reload_audio_sounds(app *a);
+widget_ctx app_widget_ctx(app *a);         /* themed drawing bundle      */
+
+/* Navigation (navigation.c): applies a request from any screen. */
+void app_handle_navigation(app *a, nav_request_t nav);
+
+/* Cross-screen fade state (app_state.c). */
+void  app_state_begin_fade(app *a);
+void  app_state_update_fade(float dt_ms);
+float app_state_fade_alpha(void);   /* 1 -> black overlay, 0 -> none */
 
 /* Screen vtables (one per UI file). */
 const screen_vtable *screen_boot_vtable(void);

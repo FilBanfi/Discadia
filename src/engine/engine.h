@@ -22,3 +22,7 @@ typedef struct engine {
 } engine;
 
 #endif /* DISCADIA_ENGINE_H */
+
+/* True when `file` has one of the engine's declared extensions
+ * (case-insensitive). No extension list -> accepts anything. */
+int engine_accepts_file(const engine *eng, const char *file);
