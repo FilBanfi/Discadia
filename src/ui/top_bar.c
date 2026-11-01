@@ -20,13 +20,13 @@ void top_bar_draw(app *a, const char *title)
 
     /* Bar background strip in secondary color, subtle. */
     SDL_Color bg = theme_color(t, TCOL_BACKGROUND_GRADIENT_END);
-    renderer_fill_rounded(app_renderer(a), 0, 0, L->sw, L->top_bar_h,
+    renderer_fill_rounded(app_renderer(a), 0, 0, L->sw, L->top_bar.h,
                           0, bg, 60);
 
     /* Title left-aligned with padding. */
     if (!title || !*title) title = locale_get("app_title");
     widget_text_primary(&w, FACE_TITLE, t->sizes.title_size, title,
-                        L->content_x, L->title_y, 2,
+                        L->content_left, L->top_bar.y + 8, -1,
                         L->sw / 2, 1);
 
     /* Clock right-aligned when enabled. */
@@ -36,6 +36,6 @@ void top_bar_draw(app *a, const char *title)
         time_now_string(clk, sizeof(clk),
                         s->clock_format == CLOCK_FORMAT_12H ? TS_12H : TS_24H);
         widget_text_secondary(&w, FACE_SMALL, t->sizes.meta_size, clk,
-                              L->sw - L->top_pad, L->title_y, 1, 200, 1);
+                              L->content_right, L->top_bar.y + 16, 1, 200, 1);
     }
 }
