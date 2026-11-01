@@ -1,0 +1,1 @@
+/* Pannello descrizione e metadati sotto il carousel */

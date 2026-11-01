@@ -1,0 +1,1 @@
+{\n  "id": "proton",\n  "name": "Proton (Windows Games)",\n  "command": "proton-run {game_path}",\n  "save_dir_template": "{saves_base}/{game_id}",\n  "supported_extensions": [".exe"],\n  "platform": "windows"\n}

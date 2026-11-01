@@ -1,0 +1,19 @@
+# Binari e build
+discadia
+*.o
+build/
+
+# Dipendenze di terze parti
+third_party/cJSON/cJSON.c
+third_party/cJSON/cJSON.h
+
+# File di sistema e IDE
+.DS_Store
+*.swp
+.vscode/
+.idea/
+
+# Runtime locale
+runtime-template/cache/*
+runtime-template/saves/*
+

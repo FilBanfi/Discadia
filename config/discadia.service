@@ -1,0 +1,1 @@
+[Unit]\nDescription=Discadia Universal Launcher\nAfter=graphical.target\n\n[Service]\nType=simple\nExecStart=/usr/local/bin/discadia\nUser=pi\nEnvironment=DISPLAY=:0\nRestart=on-failure\n\n[Install]\nWantedBy=multi-user.target

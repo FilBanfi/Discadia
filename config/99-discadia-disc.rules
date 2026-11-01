@@ -1,0 +1,1 @@
+# Discadia udev rules for optical drives\nACTION=="add", KERNEL=="sr*", SUBSYSTEM=="block", ENV{ID_FS_TYPE}!="", RUN+="/usr/local/bin/discadia-mount-disc %k"

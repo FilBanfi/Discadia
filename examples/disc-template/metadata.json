@@ -1,0 +1,1 @@
+{\n  "id": "example_ps1_game",\n  "title": "Example PS1 Game",\n  "description": "Un gioco di esempio su CD.",\n  "year": 1998,\n  "platform": "PS1",\n  "publisher": "Example Corp",\n  "engine": "pcsx-rearmed",\n  "game_file": "game.chd",\n  "thumbnail": "thumbnail.jpg"\n}
