@@ -2,11 +2,12 @@
 #include "util/json.h"
 #include "util/path_util.h"
 #include "util/string_util.h"
+#include <cJSON.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_LOCALES 16
+#define MAX_ENTRIES 256
 #define MAX_KEY_LEN 128
 #define MAX_VALUE_LEN 512
 
@@ -17,7 +18,7 @@ typedef struct {
 
 typedef struct {
     char code[16];
-    LocaleEntry entries[MAX_LOCALES * 64];
+    LocaleEntry entries[MAX_ENTRIES];
     int count;
 } LocaleData;
 
@@ -31,17 +32,41 @@ static int load_locale_file(const char *lang_code) {
     path_join(path, sizeof(path), "data/locales", lang_code);
     str_safe_cat(path, ".json", sizeof(path));
     
-    discadia_json *json = json_parse_file(path);
+    size_t size = 0;
+    char *data = NULL;
     
-    // If not found, try /etc/discadia/locales/{code}.json (installed mode)
-    if (json == NULL) {
+    // Read file manually to access cJSON directly
+    FILE *f = fopen(path, "rb");
+    if (f == NULL) {
+        // Try installed location
         path_join(path, sizeof(path), "/etc/discadia/locales", lang_code);
         str_safe_cat(path, ".json", sizeof(path));
-        json = json_parse_file(path);
+        f = fopen(path, "rb");
+        if (f == NULL) {
+            fprintf(stderr, "locale: cannot open %s\n", lang_code);
+            return -1;
+        }
     }
     
-    if (json == NULL) {
-        fprintf(stderr, "locale: failed to load %s\n", lang_code);
+    fseek(f, 0, SEEK_END);
+    size = ftell(f);
+    fseek(f, 0, SEEK_SET);
+    
+    data = malloc(size + 1);
+    if (data == NULL) {
+        fclose(f);
+        return -1;
+    }
+    
+    fread(data, 1, size, f);
+    data[size] = '\0';
+    fclose(f);
+    
+    cJSON *root = cJSON_Parse(data);
+    free(data);
+    
+    if (root == NULL) {
+        fprintf(stderr, "locale: failed to parse JSON for %s\n", lang_code);
         return -1;
     }
     
@@ -49,11 +74,19 @@ static int load_locale_file(const char *lang_code) {
     current_locale.count = 0;
     str_safe_copy(current_locale.code, lang_code, sizeof(current_locale.code));
     
-    // Parse all key-value pairs (assuming flat JSON object)
-    // We'll iterate through the root object
-    // Note: this is a simplified approach; for production we'd need cJSON iteration
+    // Iterate all key-value pairs
+    cJSON *child = NULL;
+    cJSON_ArrayForEach(child, root) {
+        if (current_locale.count >= MAX_ENTRIES) break;
+        if (!cJSON_IsString(child)) continue;
+        
+        LocaleEntry *entry = &current_locale.entries[current_locale.count];
+        str_safe_copy(entry->key, child->string, MAX_KEY_LEN);
+        str_safe_copy(entry->value, child->valuestring, MAX_VALUE_LEN);
+        current_locale.count++;
+    }
     
-    json_free(json);
+    cJSON_Delete(root);
     return 0;
 }
 
