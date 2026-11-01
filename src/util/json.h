@@ -57,4 +57,25 @@ int json_get_bool_or(const discadia_json *j, const char *key, int def);
 // Serialize to string. Caller must free. Returns NULL on error.
 char *json_to_string(const discadia_json *j);
 
+/* ---- Builder API (thin wrappers over cJSON creation functions).
+ * The returned object is owned by the caller: free with json_free().
+ * Children added via these helpers are owned by the parent. */
+
+discadia_json *json_new_object(void);
+discadia_json *json_new_array(void);
+
+/* Add a child value created from primitives; returns the added child
+ * (borrowed pointer, owned by parent) or NULL on error. */
+discadia_json *json_add_string(discadia_json *parent, const char *key, const char *value);
+discadia_json *json_add_number(discadia_json *parent, const char *key, double value);
+discadia_json *json_add_bool(discadia_json *parent, const char *key, int value);
+discadia_json *json_add_object(discadia_json *parent, const char *key);
+void           json_array_append(discadia_json *array, discadia_json *item);
+
+/* Iterate object children: pass prev=NULL to start. Returns borrowed
+ * child wrapped in a fresh non-owning handle (free wrapper with json_free),
+ * or NULL at the end. Key name via json_child_key(). */
+discadia_json *json_iter(const discadia_json *parent, const discadia_json *prev);
+const char *json_child_key(const discadia_json *child);
+
 #endif

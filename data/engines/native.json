@@ -1,1 +1,8 @@
-{\n  "id": "native",\n  "name": "Native Linux Executable",\n  "command": "{game_path}",\n  "save_dir_template": "{saves_base}/{game_id}",\n  "supported_extensions": [],\n  "platform": "linux"\n}
+{
+  "id": "native",
+  "name": "Native Linux Executable",
+  "command": "{game_path}",
+  "save_dir_template": "{saves_base}/{game_id}",
+  "supported_extensions": [],
+  "platform": "linux"
+}

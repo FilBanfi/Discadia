@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/statvfs.h>
 #include <sys/types.h>
 #include <dirent.h>
 #include <errno.h>
@@ -179,4 +180,72 @@ void fs_get_cache_dir(char *dst, size_t dst_size) {
 
 void fs_get_saves_dir(char *dst, size_t dst_size) {
     get_user_dir(dst, dst_size, "XDG_DATA_HOME", ".local/share/discadia/saves");
+}
+
+void fs_get_data_dir(char *dst, size_t dst_size) {
+    get_user_dir(dst, dst_size, "XDG_DATA_HOME", ".local/share/discadia/games");
+}
+
+int fs_write_file_atomic(const char *path, const char *data, size_t size) {
+    if (path == NULL || data == NULL) return -1;
+
+    char tmp[2048];
+    char bak[2048];
+    str_format(tmp, sizeof(tmp), "%s.tmp", path);
+    str_format(bak, sizeof(bak), "%s.bak", path);
+
+    FILE *f = fopen(tmp, "wb");
+    if (f == NULL) return -1;
+
+    if (fwrite(data, 1, size, f) != size) {
+        fclose(f);
+        remove(tmp);
+        return -1;
+    }
+    if (fflush(f) != 0 || fsync(fileno(f)) != 0) {
+        fclose(f);
+        remove(tmp);
+        return -1;
+    }
+    fclose(f);
+
+    // Keep a backup of the previous version (best effort).
+    if (fs_file_exists(path)) {
+        size_t old_size = 0;
+        char *old = fs_read_file(path, &old_size);
+        if (old != NULL) {
+            fs_write_file(bak, old, old_size);
+            free(old);
+        }
+    }
+
+    if (rename(tmp, path) != 0) {
+        remove(tmp);
+        return -1;
+    }
+    return 0;
+}
+
+static int rmtree_cb(const char *name, const char *full_path, int is_dir, void *userdata) {
+    (void)name;
+    (void)userdata;
+    if (is_dir) {
+        return fs_rmtree(full_path);
+    }
+    return remove(full_path);
+}
+
+int fs_rmtree(const char *path) {
+    if (path == NULL) return -1;
+    if (!fs_dir_exists(path)) return remove(path);
+
+    if (fs_list_dir(path, rmtree_cb, NULL) != 0) return -1;
+    return rmdir(path);
+}
+
+long long fs_free_space_bytes(const char *path) {
+    if (path == NULL) return -1;
+    struct statvfs st;
+    if (statvfs(path, &st) != 0) return -1;
+    return (long long)st.f_bavail * (long long)st.f_frsize;
 }
