@@ -130,3 +130,81 @@ char *json_to_string(const discadia_json *j) {
     char *raw = cJSON_PrintUnformatted(j->root);
     return raw; // caller frees with cJSON-free... we need to wrap this
 }
+
+/* ---- Builder API ---- */
+
+static discadia_json *wrap_owning(cJSON *node) {
+    if (node == NULL) return NULL;
+    discadia_json *j = malloc(sizeof(*j));
+    if (j == NULL) { cJSON_Delete(node); return NULL; }
+    j->root = node;
+    j->owns = 1;
+    return j;
+}
+
+discadia_json *json_new_object(void) { return wrap_owning(cJSON_CreateObject()); }
+discadia_json *json_new_array(void)  { return wrap_owning(cJSON_CreateArray()); }
+
+discadia_json *json_add_string(discadia_json *parent, const char *key, const char *value) {
+    if (parent == NULL || parent->root == NULL || key == NULL) return NULL;
+    cJSON *child = cJSON_AddStringToObject(parent->root, key, value ? value : "");
+    if (child == NULL) return NULL;
+    discadia_json *w = malloc(sizeof(*w));
+    if (w == NULL) return NULL;
+    w->root = child; w->owns = 0;
+    return w;
+}
+
+discadia_json *json_add_number(discadia_json *parent, const char *key, double value) {
+    if (parent == NULL || parent->root == NULL || key == NULL) return NULL;
+    cJSON *child = cJSON_AddNumberToObject(parent->root, key, value);
+    if (child == NULL) return NULL;
+    discadia_json *w = malloc(sizeof(*w));
+    if (w == NULL) return NULL;
+    w->root = child; w->owns = 0;
+    return w;
+}
+
+discadia_json *json_add_bool(discadia_json *parent, const char *key, int value) {
+    if (parent == NULL || parent->root == NULL || key == NULL) return NULL;
+    cJSON *child = cJSON_AddBoolToObject(parent->root, key, value ? 1 : 0);
+    if (child == NULL) return NULL;
+    discadia_json *w = malloc(sizeof(*w));
+    if (w == NULL) return NULL;
+    w->root = child; w->owns = 0;
+    return w;
+}
+
+discadia_json *json_add_object(discadia_json *parent, const char *key) {
+    if (parent == NULL || parent->root == NULL || key == NULL) return NULL;
+    cJSON *child = cJSON_AddObjectToObject(parent->root, key);
+    if (child == NULL) return NULL;
+    discadia_json *w = malloc(sizeof(*w));
+    if (w == NULL) return NULL;
+    w->root = child; w->owns = 0;
+    return w;
+}
+
+void json_array_append(discadia_json *array, discadia_json *item) {
+    if (array == NULL || array->root == NULL || item == NULL || item->root == NULL) return;
+    cJSON_AddItemToArray(array->root, item->root);
+    item->root = NULL; /* ownership moved to array */
+    item->owns = 0;
+}
+
+discadia_json *json_iter(const discadia_json *parent, const discadia_json *prev) {
+    if (parent == NULL || parent->root == NULL) return NULL;
+    cJSON *start = (prev != NULL && prev->root != NULL) ? prev->root->next
+                                                        : parent->root->child;
+    if (start == NULL) return NULL;
+    discadia_json *w = malloc(sizeof(*w));
+    if (w == NULL) return NULL;
+    w->root = start;
+    w->owns = 0;
+    return w;
+}
+
+const char *json_child_key(const discadia_json *child) {
+    if (child == NULL || child->root == NULL) return NULL;
+    return child->root->string;
+}

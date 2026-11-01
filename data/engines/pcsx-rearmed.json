@@ -1,1 +1,8 @@
-{\n  "id": "pcsx-rearmed",\n  "name": "PCSX Rearmed (PS1)",\n  "command": "pcsx-rearmed -cdfile {game_path} -state {save_dir}/state",\n  "save_dir_template": "{saves_base}/{game_id}",\n  "supported_extensions": [".chd", ".iso", ".bin", ".cue"],\n  "platform": "ps1"\n}
+{
+  "id": "pcsx-rearmed",
+  "name": "PCSX Rearmed (PS1)",
+  "command": "pcsx-rearmed -cdfile {game_path} -state {save_dir}/state",
+  "save_dir_template": "{saves_base}/{game_id}",
+  "supported_extensions": [".chd", ".iso", ".bin", ".cue"],
+  "platform": "ps1"
+}

@@ -1,1 +1,68 @@
-{\n  "name": "Arcade Classic",\n  "author": "Discadia Team",\n  "version": "1.0",\n  "colors": {\n    "background": "#1a1a2e",\n    "background_gradient_end": "#16213e",\n    "primary": "#e94560",\n    "text": "#ffffff",\n    "text_secondary": "#a0a0a0",\n    "accent": "#f5a623"\n  },\n  "layout": {\n    "top_bar_title_x": 40,\n    "top_bar_title_y": 40,\n    "top_bar_right_x": 1200,\n    "carousel_y": 360,\n    "metadata_y": 600\n  },\n  "animations": {\n    "enabled": true,\n    "scroll_speed_ms": 150\n  }\n}
+{
+  "name": "Arcade Classic",
+  "author": "Discadia Team",
+  "version": "1.0",
+  "description": "Stile cabinato arcade anni '90",
+  "colors": {
+    "background": "#1a1a2e",
+    "background_gradient_end": "#16213e",
+    "primary": "#e94560",
+    "secondary": "#0f3460",
+    "text": "#ffffff",
+    "text_secondary": "#a0a0a0",
+    "accent": "#f5a623",
+    "selection_glow": "#f5a623"
+  },
+  "fonts": {
+    "title": "",
+    "body": "",
+    "small": ""
+  },
+  "sizes": {
+    "icon_normal": 180,
+    "icon_selected": 240,
+    "icon_spacing": 220,
+    "icon_border_radius": 8,
+    "title_size": 56,
+    "description_size": 22,
+    "meta_size": 18,
+    "top_bar_height": 80,
+    "metadata_panel_height": 200
+  },
+  "layout": {
+    "icons_y_position": 0.55,
+    "title_y_position": 0.12,
+    "description_y_position": 0.78,
+    "meta_y_position": 0.88,
+    "top_bar_padding": 40
+  },
+  "animations": {
+    "enabled": true,
+    "scroll_speed_ms": 150,
+    "selection_scale_ms": 200,
+    "fade_transition_ms": 300,
+    "cd_insert_animation": "slide_from_top"
+  },
+  "visual_effects": {
+    "icon_shadow": true,
+    "selection_glow": true,
+    "scanline_overlay": false,
+    "crt_curve": false,
+    "frame_overlay": ""
+  },
+  "sounds": {
+    "enabled": true,
+    "volume": 0.7
+  },
+  "metadata_display": {
+    "show_platform": true,
+    "show_year": true,
+    "show_publisher": true,
+    "show_developer": true,
+    "show_genre": true,
+    "show_players": true,
+    "show_version": true,
+    "show_region": true,
+    "separator": " • "
+  }
+}
