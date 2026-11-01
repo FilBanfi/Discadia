@@ -19,9 +19,7 @@
 #define REPEAT_DELAY_MS 380.0f
 #define REPEAT_RATE_MS  160.0f
 
-/* Fixed keys handled outside the remappable mapping. */
-#define FIXED_QUIT_KEY    "KEY_Q"
-#define FIXED_CONTEXT_KEY "KEY_SPACE"
+/* Fixed keys (macros live in input.h so the remap screen shares them). */
 
 static struct {
     int down;
@@ -39,6 +37,9 @@ static int g_hp_events[HOTPLUG_QUEUE]; /* 1 = connected, -1 = disconnected */
 static int g_hp_head, g_hp_count;
 
 extern const char *input_mapping_get_keyboard(input_action_t action);
+
+/* Set when SDL_QUIT arrives; consumed by input_window_close_requested(). */
+static int g_app_quit_requested;
 
 int input_init(void)
 {
@@ -124,12 +125,15 @@ static void pump_event(const SDL_Event *ev, float dt_ms)
     case SDL_KEYDOWN:
     case SDL_KEYUP:
     {
-        if (ev->type == SDL_KEYDOWN && ev->key.repeat) break;
+        /* Ignore autorepeat but still track the held state, otherwise a
+         * key pressed before a long screen pause could stay "down" in our
+         * bookkeeping forever. */
+        const int repeat = (ev->type == SDL_KEYDOWN && ev->key.repeat);
         const char *name = input_event_to_button_name(ev);
         int is_down = (ev->type == SDL_KEYDOWN);
         if (name && strcmp(name, FIXED_QUIT_KEY) == 0)
         {
-            if (is_down) g_quit_pressed = 1;
+            if (is_down && !repeat) g_quit_pressed = 1;
             break;
         }
         if (name && strcmp(name, FIXED_CONTEXT_KEY) == 0)
@@ -137,7 +141,11 @@ static void pump_event(const SDL_Event *ev, float dt_ms)
             set_down(IA_CONTEXT, is_down, dt_ms);
             break;
         }
-        if (name) set_down(action_for_button_name(name), is_down, dt_ms);
+        {
+            int action = action_for_button_name(name);
+            if (action >= 0 && !repeat) set_down(action, is_down, dt_ms);
+            else if (action >= 0) g_actions[action].down = is_down; /* sync on repeat */
+        }
         break;
     }
 
@@ -145,11 +153,6 @@ static void pump_event(const SDL_Event *ev, float dt_ms)
     case SDL_CONTROLLERBUTTONUP:
     {
         const char *name = input_event_to_button_name(ev);
-        if (name && strcmp(name, "SELECT") == 0)
-        {
-            set_down(IA_CONTEXT, ev->type == SDL_CONTROLLERBUTTONDOWN, dt_ms);
-            break;
-        }
         if (name)
             set_down(action_for_button_name(name),
                      ev->type == SDL_CONTROLLERBUTTONDOWN, dt_ms);
@@ -160,8 +163,6 @@ static void pump_event(const SDL_Event *ev, float dt_ms)
         break;
     }
 }
-
-static int g_app_quit_requested;
 
 int input_window_close_requested(void)
 {
@@ -252,6 +253,9 @@ const char *input_event_to_button_name(const SDL_Event *ev)
     if (ev->type == SDL_CONTROLLERBUTTONDOWN ||
         ev->type == SDL_CONTROLLERBUTTONUP)
     {
+        /* SDL calls the old "SELECT/BACK" pad button SDL_BUTTON_BACK; we
+         * expose it as "SELECT" (classic NES naming used in mappings). */
+        if (ev->cbutton.button == SDL_CONTROLLER_BUTTON_BACK) return "SELECT";
         Uint8 b = ev->cbutton.button;
         if (b < sizeof(g_controller_buttons) / sizeof(g_controller_buttons[0]))
             return g_controller_buttons[b];

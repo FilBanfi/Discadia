@@ -1,6 +1,7 @@
 #ifndef DISCADIA_SETTINGS_STORE_H
 #define DISCADIA_SETTINGS_STORE_H
 
+#include <stddef.h>
 #include "settings_model.h"
 
 /* Load ~/.config/discadia/config.json into the model. Missing file keeps

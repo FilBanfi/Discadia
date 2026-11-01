@@ -1,4 +1,6 @@
 #ifndef DISCADIA_LOCALE_H
+
+#include <stddef.h>
 #define DISCADIA_LOCALE_H
 
 /*
@@ -28,7 +30,7 @@ const char *locale_get_current(void);
 /* Switch language at runtime (reload JSON). Same fallback rules as init. */
 int locale_set(const char *data_dir, const char *lang_code);
 
-/* List available languages: scans <data_dir>/locales/*.json and calls
+/* List available languages: scans locales dir of data_dir and calls
  * cb(code, native_name) for each. Returns count or -1. */
 typedef int (*locale_list_cb)(const char *code, const char *native_name,
                               void *userdata);

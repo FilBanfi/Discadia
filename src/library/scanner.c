@@ -44,12 +44,26 @@ int scanner_scan_installed(library *lib)
         return 0;
     }
 
-    /* Drop previously-scanned installed entries but keep disc ones. */
-    for (int i = library_count(lib) - 1; i >= 0; i--)
+    /* Rebuild the installed section from scratch: collect every
+     * installed item's metadata_dir first (removing while iterating
+     * would shift indices), then drop them one by one. Disc entries
+     * are always preserved. */
+    char (*dirs)[512] = NULL;
+    int ndirs = 0;
+    int n = library_count(lib);
+    if (n > 0)
     {
-        const library_item *it = library_get(lib, i);
-        if (it && it->source == SRC_INSTALLED)
-            library_remove_by_dir_prefix(lib, it->metadata_dir);
+        dirs = malloc((size_t)n * sizeof(*dirs));
+        if (!dirs) return -1;
+        for (int i = 0; i < n; i++)
+        {
+            const library_item *it = library_get(lib, i);
+            if (it && it->source == SRC_INSTALLED)
+                snprintf(dirs[ndirs++], 512, "%s", it->metadata_dir);
+        }
+        for (int i = 0; i < ndirs; i++)
+            library_remove_by_dir_prefix(lib, dirs[i]);
+        free(dirs);
     }
 
     scan_ctx ctx = { lib, "", 0 };

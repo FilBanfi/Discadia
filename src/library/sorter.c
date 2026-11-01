@@ -1,5 +1,6 @@
-#include "library/library.h"
+#include "library/library_internal.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>

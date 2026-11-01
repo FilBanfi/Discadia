@@ -20,8 +20,8 @@ static const char *g_action_names[IA_COUNT] = {
 };
 
 static const char *g_action_keys[IA_COUNT] = {
-    "act_left", "act_right", "act_up", "act_down",
-    "act_confirm", "act_back", "act_menu", "act_context"
+    "action_left", "action_right", "action_up", "action_down",
+    "action_confirm", "action_back", "action_menu", "action_context"
 };
 
 /* Default gamepad bindings (NES-style layout). */
@@ -35,11 +35,6 @@ static const char *g_keyboard_fallback[IA_COUNT] = {
     "KEY_LEFT", "KEY_RIGHT", "KEY_UP", "KEY_DOWN",
     "KEY_RETURN", "KEY_ESCAPE", "", ""
 };
-
-/* Extra fixed keys handled directly by the input core:
- * Q quits everywhere, SELECT/SPACE acts as CONTEXT. */
-#define FIXED_QUIT_KEY     "KEY_Q"
-#define FIXED_CONTEXT_KEYS "KEY_SPACE"
 
 static char g_binding[IA_COUNT][BTN_NAME_LEN];      /* gamepad binding   */
 static char g_kb_binding[IA_COUNT][BTN_NAME_LEN];   /* keyboard fallback */
@@ -73,6 +68,9 @@ const char *input_mapping_action_key(input_action_t action)
     return g_action_keys[action];
 }
 
+/* Keyboard fallback lookup used by the input core (declared extern there). */
+const char *input_mapping_get_keyboard(input_action_t action);
+
 static void set_binding(char *dst, const char *src)
 {
     snprintf(dst, BTN_NAME_LEN, "%s", src ? src : "");
@@ -103,8 +101,8 @@ int input_mapping_load(void)
         if (m)
         {
             discadia_json *item = json_get(m, g_action_names[a]);
-            v = json_string(item);
-            json_free(item);
+            v = json_string(item);   /* borrowed from the tree */
+            json_free(item);         /* frees only the wrapper */
         }
         if (v && is_known_button(v))
             set_binding(g_binding[a], v);
@@ -162,7 +160,7 @@ int input_mapping_set(input_action_t action, const char *button_name)
     /* Unbind any other action that shared this button (avoid conflicts). */
     for (int a = 0; a < IA_COUNT; a++)
     {
-        if (a != action && strcmp(g_binding[a], button_name) == 0)
+        if (a != (int)action && strcmp(g_binding[a], button_name) == 0)
             set_binding(g_binding[a], "");
     }
     return 0;

@@ -1,4 +1,5 @@
 #include "library/library.h"
+#include "library/library_internal.h"
 #include "log.h"
 
 #include <stdlib.h>
@@ -9,12 +10,6 @@
  * Library container: dynamically grown array of items. Sorting and
  * lookup helpers live in sorter.c; this file owns memory only.
  */
-
-struct library {
-    library_item *items;
-    int count;
-    int capacity;
-};
 
 #define LIB_GROWTH 16
 
