@@ -29,7 +29,7 @@ int theme_resolve_asset(const discadia_theme *t, const char *rel,
  * Empty string when the theme has none. */
 void theme_frame_overlay_path(const discadia_theme *t, char *dst, size_t sz)
 {
-    if (!t || !t->effects.frame_overlay[0] || !t->effects.enabled)
+    if (!t || !t->effects.frame_overlay[0])
     { if (sz) dst[0] = '\0'; return; }
     if (!theme_resolve_asset(t, t->effects.frame_overlay, dst, sz))
         dst[0] = '\0';

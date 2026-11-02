@@ -10,7 +10,7 @@
 #include "ui/renderer.h"
 #include "ui/animation.h"
 #include "i18n/locale.h"
-#include "log.h"
+#include "util/string_util.h"
 
 #include <math.h>
 #include <string.h>

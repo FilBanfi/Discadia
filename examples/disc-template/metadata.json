@@ -1,1 +1,17 @@
-{\n  "id": "example_ps1_game",\n  "title": "Example PS1 Game",\n  "description": "Un gioco di esempio su CD.",\n  "year": 1998,\n  "platform": "PS1",\n  "publisher": "Example Corp",\n  "engine": "pcsx-rearmed",\n  "game_file": "game.chd",\n  "thumbnail": "thumbnail.jpg"\n}
+{
+  "id": "example_ps1_game",
+  "title": "Example PS1 Game",
+  "title_it": "Gioco PS1 di Esempio",
+  "description_en": "An example game on CD.",
+  "description_it": "Un gioco di esempio su CD.",
+  "year": 1998,
+  "platform": "PS1",
+  "publisher": "Example Corp",
+  "developer": "Example Corp",
+  "genre": "Action",
+  "players": 1,
+  "region": "PAL",
+  "engine": "pcsx-rearmed",
+  "game_file": "game.chd",
+  "thumbnail": "thumbnail.jpg"
+}

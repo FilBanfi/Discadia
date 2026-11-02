@@ -39,8 +39,12 @@ void fs_get_cache_dir(char *dst, size_t dst_size);
 // Get user's saves directory (~/.local/share/discadia/saves)
 void fs_get_saves_dir(char *dst, size_t dst_size);
 
-// Get user's data/games directory (~/.local/share/discadia/games)
-void fs_get_data_dir(char *dst, size_t dst_size);
+// Get the Discadia user data root (~/.local/share/discadia). Parent of
+// games/, engines/ and themes/ installed by the store.
+void fs_get_discadia_root(char *dst, size_t dst_size);
+
+// Get user's installed-games directory (~/.local/share/discadia/games)
+void fs_get_games_dir(char *dst, size_t dst_size);
 
 // Atomic write: writes to path.tmp then rename()s over the target, and
 // keeps a .bak copy of the previous content. Never leaves a half-written

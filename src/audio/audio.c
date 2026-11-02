@@ -6,6 +6,7 @@
 
 #include "audio/audio.h"
 #include "audio/sound_cache.h"
+#include "log.h"
 
 #include <SDL.h>
 #include <SDL_mixer.h>

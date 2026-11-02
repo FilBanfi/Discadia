@@ -224,6 +224,12 @@ int app_init(app *a)
     char edir[512];
     path_join(edir, sizeof(edir), a->data_dir, "engines");
     int eng_n = engine_registry_load_dir(a->engines, edir);
+    /* Store-installed engines live under ~/.local/share/discadia/engines */
+    char udir[512];
+    fs_get_data_dir(udir, sizeof(udir));
+    char ueng[640];
+    path_join(ueng, sizeof(ueng), udir, "engines");
+    eng_n += engine_registry_load_dir(a->engines, ueng);
     LOG_INFO("engines loaded: %d", eng_n);
 
     const char *media_root = getenv("DISCADIA_MEDIA_DIR");
