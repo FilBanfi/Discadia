@@ -4,7 +4,9 @@
  * saves the choice and shows a toast on fallback (never crashes).
  */
 
+#include <string.h>
 #include "app/app.h"
+#include "audio/audio.h"
 #include "settings/settings_store.h"
 #include "theme/theme_parser.h"
 #include "ui/widgets.h"
