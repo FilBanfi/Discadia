@@ -21,7 +21,7 @@ void top_bar_draw(app *a, const char *title)
     /* Bar background strip in secondary color, subtle. */
     SDL_Color bg = theme_color(t, TCOL_BACKGROUND_GRADIENT_END);
     renderer_fill_rounded(app_renderer(a), 0, 0, L->sw, L->top_bar.h,
-                          0, bg, 60);
+                          0, bg, 60);   /* SDL_Rect height field is .h */
 
     /* Title left-aligned with padding. */
     if (!title || !*title) title = locale_get("app_title");

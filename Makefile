@@ -33,11 +33,11 @@ CORE_SRCS = \
        src/ui/texture_cache.c src/ui/font_cache.c src/ui/animation.c \
        src/ui/toast.c src/ui/boot_screen.c src/ui/menu_screen.c \
        src/theme/theme.c src/theme/theme_parser.c src/theme/theme_assets.c \
-       src/input/input.c src/input/controller.c src/input/keyboard.c \
+       src/input/input.c src/input/controller.c \
        src/input/input_mapping.c src/input/input_hotplug.c \
        src/library/library.c src/library/library_item.c src/library/metadata.c \
        src/library/scanner.c src/library/sorter.c src/library/desktop_entries.c \
-       src/media/disc_manager.c src/media/disc_drive.c src/media/disc_scanner.c \
+       src/media/disc_manager.c src/media/disc_scanner.c \
        src/engine/engine.c src/engine/engine_registry.c src/engine/launcher.c \
        src/engine/variables.c src/engine/process.c \
        src/settings/settings_screen.c src/settings/settings_model.c \
@@ -47,7 +47,7 @@ CORE_SRCS = \
        src/store/store_client.c src/store/package_manifest.c \
        src/store/package_installer.c src/store/compatibility.c \
        src/audio/audio.c src/audio/sound_cache.c \
-       src/i18n/locale.c src/i18n/locale_store.c \
+       src/i18n/locale.c \
        src/system/system_info.c src/system/power.c src/system/time_service.c \
        src/app/app.c src/app/app_state.c src/app/navigation.c \
        src/util/fs.c src/util/json.c src/util/string_util.c src/util/path_util.c \
