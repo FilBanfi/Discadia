@@ -13,6 +13,8 @@
 #include "ui/renderer.h"
 #include "i18n/locale.h"
 #include "input/input.h"
+#include "system/system_info.h"
+#include "util/string_util.h"
 #include "log.h"
 
 #include <string.h>
