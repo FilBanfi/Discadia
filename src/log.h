@@ -21,6 +21,11 @@ int discadia_debug_enabled(void);
 void discadia_log_write(const char *level, const char *fmt, ...)
     __attribute__((format(printf, 2, 3)));
 
+#define LOG_I(...)  do { if (discadia_debug_enabled()) discadia_log_write("INFO",  __VA_ARGS__); } while (0)
+#define LOG_D(...)  do { if (discadia_debug_enabled()) discadia_log_write("DEBUG", __VA_ARGS__); } while (0)
+#define LOG_W(...)  discadia_log_write("WARN",  __VA_ARGS__)
+#define LOG_E(...)  discadia_log_write("ERROR", __VA_ARGS__)
+
 #define LOG_INFO(...)  do { if (discadia_debug_enabled()) discadia_log_write("INFO",  __VA_ARGS__); } while (0)
 #define LOG_DEBUG(...) do { if (discadia_debug_enabled()) discadia_log_write("DEBUG", __VA_ARGS__); } while (0)
 #define LOG_WARN(...)  discadia_log_write("WARN",  __VA_ARGS__)

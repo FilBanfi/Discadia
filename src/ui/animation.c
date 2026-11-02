@@ -49,3 +49,15 @@ float anim_pingpong(float t01)
     float p = anim_clamp(t01, 0.f, 1.f);
     return p < 0.5f ? p * 2.f : 2.f - p * 2.f;
 }
+
+float anim_pingpong_ms(float age_ms, float period_ms)
+{
+    if (period_ms <= 0.f)
+        return 0.f;
+    /* wrap unbounded age into [0, period), then map to a 0->1->0 wave */
+    float phase = fmodf(age_ms, period_ms);
+    if (phase < 0.f)
+        phase += period_ms;
+    float t01 = phase / period_ms;         /* 0..1 */
+    return anim_pingpong(t01 * 2.f > 1.f ? 1.f - (t01 * 2.f - 1.f) : t01 * 2.f);
+}

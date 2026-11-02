@@ -49,6 +49,7 @@ CORE_SRCS = \
        src/audio/audio.c src/audio/sound_cache.c \
        src/i18n/locale.c \
        src/system/system_info.c src/system/power.c src/system/time_service.c \
+       src/system/network_status.c \
        src/app/app.c src/app/app_state.c src/app/navigation.c \
        src/util/fs.c src/util/json.c src/util/string_util.c src/util/path_util.c \
        third_party/cJSON/cJSON.c

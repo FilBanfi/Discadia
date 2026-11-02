@@ -12,6 +12,7 @@
  */
 
 #include <stdio.h>
+#include "ui/top_bar.h"
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>

@@ -5,6 +5,7 @@
  */
 
 #include <string.h>
+#include "ui/top_bar.h"
 #include "app/app.h"
 #include "audio/audio.h"
 #include "settings/settings_store.h"

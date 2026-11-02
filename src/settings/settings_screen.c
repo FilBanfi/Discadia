@@ -9,6 +9,7 @@
  */
 
 #include "app/app.h"
+#include "ui/top_bar.h"
 #include "audio/audio.h"
 #include "settings/settings_store.h"
 #include "ui/widgets.h"
