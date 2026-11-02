@@ -53,11 +53,8 @@ static void setup_tree(void)
     setenv("DISCADIA_DATA_DIR", g_tmp, 1);
 
     /* locales: en + it */
-    FILE *f = fopen("/tmp/discadia_locales/en.json", "w");
-    if (!f) f = fopen(strcat(strcpy(cmd, g_tmp), "/locales/en.json"), "w");
-    fclose(f ? f : fopen("/dev/null", "w"));
     snprintf(cmd, sizeof(cmd), "%s/locales/en.json", g_tmp);
-    f = fopen(cmd, "w");
+    FILE *f = fopen(cmd, "w");
     fprintf(f, "{\"app_title\":\"Discadia\",\"no_games\":\"No games\","
                "\"settings\":\"Settings\"}");
     fclose(f);
@@ -81,7 +78,7 @@ static void test_string_util(void)
     printf("[test] string_util\n");
     char buf[8];
     str_safe_copy(buf, "0123456789", sizeof buf);
-    CHECK(strcmp(buf, "012345") == 0);           /* truncates safely */
+    CHECK(strcmp(buf, "0123456") == 0);         /* truncates safely, NUL-terminated */
     CHECK(str_ends_with("game.CHD", ".chd") || 1);/* impl may be case-sensitive */
     CHECK(str_starts_with("/etc/discadia", "/etc") == 1);
     CHECK(str_is_empty("") == 1 && str_is_empty(NULL) == 1);
@@ -167,12 +164,12 @@ static void test_json(void)
 static void test_i18n(void)
 {
     printf("[test] locale fallback\n");
-    CHECK(locale_set(NULL, "it") == 0);
+    CHECK(locale_set(g_tmp, "it") == 0);
     CHECK(strcmp(locale_get("no_games"), "Nessun gioco") == 0);
-    CHECK(locale_set(NULL, "en") == 0);
+    CHECK(locale_set(g_tmp, "en") == 0);
     CHECK(strcmp(locale_get("no_games"), "No games") == 0);
     /* unknown language falls back to en */
-    CHECK(locale_set(NULL, "xx") == 0);
+    CHECK(locale_set(g_tmp, "xx") == 0);
     CHECK(strcmp(locale_get("no_games"), "No games") == 0);
     /* missing key returns the key itself, never NULL */
     const char *m = locale_get("totally_missing_key");
@@ -183,7 +180,7 @@ static void test_i18n(void)
 static void test_metadata_localized(void)
 {
     printf("[test] localized game metadata\n");
-    char meta[600], game[600];
+    char meta[600], game[600], dir[600];
     snprintf(meta, sizeof meta, "%s/games/g1/metadata.json", g_tmp);
     FILE *f = fopen(meta, "w");
     fprintf(f, "{ \"id\":\"g1\", \"title\":\"Game One\","
@@ -195,32 +192,24 @@ static void test_metadata_localized(void)
     snprintf(game, sizeof game, "%s/games/g1/game.chd", g_tmp);
     FILE *g = fopen(game, "w"); fprintf(g, "x"); fclose(g);
 
+    path_dirname(dir, sizeof dir, meta);
+
     library_item it;
     memset(&it, 0, sizeof it);
-    CHECK(library_item_load_metadata(&it, meta_dir_of(meta), SRC_INSTALLED, -1) == 0);
+    CHECK(library_item_load_metadata(&it, dir, SRC_INSTALLED, -1) == 0);
     /* with locale en -> English desc */
-    locale_set(NULL, "en");
+    locale_set(g_tmp, "en");
     memset(&it, 0, sizeof it);
-    CHECK(library_item_load_metadata(&it, meta_dir_of(meta), SRC_INSTALLED, -1) == 0);
+    CHECK(library_item_load_metadata(&it, dir, SRC_INSTALLED, -1) == 0);
     CHECK(strcmp(it.description, "English desc") == 0);
     /* with locale it -> Italian desc (falls back per resolution rule) */
-    locale_set(NULL, "it");
+    locale_set(g_tmp, "it");
     memset(&it, 0, sizeof it);
-    CHECK(library_item_load_metadata(&it, meta_dir_of(meta), SRC_INSTALLED, -1) == 0);
+    CHECK(library_item_load_metadata(&it, dir, SRC_INSTALLED, -1) == 0);
     CHECK(strcmp(it.description, "Descrizione italiana") == 0);
     CHECK(it.year == 1996 && it.players == 2);
     CHECK(strcmp(it.engine, "pcsx-rearmed") == 0);
-    locale_set(NULL, "en");
-}
-
-/* helper lives above main because of the macro-free style */
-static const char *meta_dir_of_buf;
-static const char *meta_dir_of(const char *path)
-{
-    static char dir[600];
-    path_dirname(dir, sizeof dir, path);
-    meta_dir_of_buf = dir;
-    return dir;
+    locale_set(g_tmp, "en");
 }
 
 /* ---------------- library sort (CD first) ---------------- */
@@ -237,7 +226,10 @@ static void test_library_sort(void)
     CHECK(library_add(lib, &b) >= 0);
     CHECK(library_add(lib, &c) >= 0);
     CHECK(library_count(lib) == 3);
-    int sel = 2; /* points at item... whatever, must stay consistent */
+    int sel = -1;
+    for (int i = 0; i < library_count(lib); i++)
+        if (!strcmp(library_get(lib, i)->title, "Zelda")) sel = i;
+    CHECK(sel >= 0);
     const library_item *sel_item = library_get(lib, sel);
     library_sort(lib, &sel);
     const library_item *i0 = library_get(lib, 0);
@@ -310,11 +302,11 @@ static void test_store_index(void)
     CHECK(m.items[0].type == PKG_GAME);
     CHECK(m.items[0].size_mb == 350);
     CHECK(m.items[0].arch_count == 3);
-    locale_set(NULL, "it");
+    locale_set(g_tmp, "it");
     memset(&m, 0, sizeof m);
     CHECK(store_index_parse_file(p, &m) == 0);
     CHECK(strcmp(m.items[0].description, "Giochi di kart") == 0);
-    locale_set(NULL, "en");
+    locale_set(g_tmp, "en");
     memset(&m, 0, sizeof m);
     CHECK(store_index_parse_file(p, &m) == 0);
     CHECK(strcmp(m.items[0].description, "Kart racer") == 0);
@@ -322,7 +314,13 @@ static void test_store_index(void)
     CHECK(m.items[1].type == PKG_GAME);
     /* garbage input handled */
     CHECK(store_index_parse("{oops", &m) == -1);
-    CHECK(compat_arch_supported("arm64") == 1);
+    /* the runner host is either arm or x86; check self-consistency */
+#ifdef __x86_64__
+    CHECK(compat_arch_supported("x86_64") == 1);
+#else
+    CHECK(compat_arch_supported("arm64") == 1 ||
+          compat_arch_supported("armv7") == 1);
+#endif
     CHECK(compat_arch_supported("mips") == 0);
     remove(p);
 }
