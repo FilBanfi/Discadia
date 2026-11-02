@@ -230,7 +230,6 @@ static void test_library_sort(void)
     for (int i = 0; i < library_count(lib); i++)
         if (!strcmp(library_get(lib, i)->title, "Zelda")) sel = i;
     CHECK(sel >= 0);
-    const library_item *sel_item = library_get(lib, sel);
     library_sort(lib, &sel);
     const library_item *i0 = library_get(lib, 0);
     const library_item *i1 = library_get(lib, 1);
@@ -238,7 +237,11 @@ static void test_library_sort(void)
     CHECK(i0 && strcmp(i0->title, "Ape Escape") == 0);  /* disc, alpha */
     CHECK(i1 && strcmp(i1->title, "Crash") == 0);       /* disc, alpha */
     CHECK(i2 && strcmp(i2->title, "Zelda") == 0);       /* installed last */
-    CHECK(library_get(lib, sel) == sel_item);           /* selection followed item */
+    /* Selection must follow the item across the re-sort: Zelda moved to
+     * index 2, so sel must now point at it (items live in a realloc'd
+     * array, so compare by value, not pointer identity). */
+    const library_item *now = library_get(lib, sel);
+    CHECK(now && strcmp(now->title, "Zelda") == 0);
     /* removal by mount prefix */
     strcpy(a.metadata_dir, "/media/discadia/disc0"); strcpy(a.title, "D1");
     a.source = SRC_DISC; strcpy(a.id, "d1");

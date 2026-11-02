@@ -27,22 +27,13 @@ static void metadata_get_localized(const discadia_json *root, const char *base,
 {
     const char *lang = locale_get_current();
     char key[160];
-    const char *v = NULL;
 
+    /* Try KEY_<current_lang> first. */
     if (lang && *lang)
     {
         snprintf(key, sizeof(key), "%s_%s", base, lang);
         discadia_json *n = json_get(root, key);
-        v = json_string(n);
-        json_free(n);
-    }
-    if (!v || !*v)
-    {
-        snprintf(key, sizeof(key), "%s_en", base);
-        discadia_json *n = json_get(root, key);
-        v = json_string(n);
-        /* keep n alive: value pointer borrows from the tree, so free after
-         * copying below instead. */
+        const char *v = json_string(n);
         if (v && *v)
         {
             snprintf(dst, dst_size, "%s", v);
@@ -51,18 +42,27 @@ static void metadata_get_localized(const discadia_json *root, const char *base,
         }
         json_free(n);
     }
-    if (!v || !*v)
+    /* Then explicit English, then the bare field. */
+    snprintf(key, sizeof(key), "%s_en", base);
+    discadia_json *n = json_get(root, key);
+    const char *v = json_string(n);
+    if (v && *v)
     {
-        discadia_json *n = json_get(root, base);
-        v = json_string(n);
-        if (v && *v)
-        {
-            snprintf(dst, dst_size, "%s", v);
-            json_free(n);
-            return;
-        }
+        snprintf(dst, dst_size, "%s", v);
         json_free(n);
+        return;
     }
+    json_free(n);
+
+    n = json_get(root, base);
+    v = json_string(n);
+    if (v && *v)
+    {
+        snprintf(dst, dst_size, "%s", v);
+        json_free(n);
+        return;
+    }
+    json_free(n);
     dst[0] = '\0';
 }
 

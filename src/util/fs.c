@@ -182,7 +182,13 @@ void fs_get_saves_dir(char *dst, size_t dst_size) {
     get_user_dir(dst, dst_size, "XDG_DATA_HOME", ".local/share/discadia/saves");
 }
 
-void fs_get_data_dir(char *dst, size_t dst_size) {
+void fs_get_discadia_root(char *dst, size_t dst_size) {
+    /* ~/.local/share/discadia (or $XDG_DATA_HOME/discadia): parent of
+     * the games/, engines/ and themes/ trees installed by the store. */
+    get_user_dir(dst, dst_size, "XDG_DATA_HOME", ".local/share/discadia");
+}
+
+void fs_get_games_dir(char *dst, size_t dst_size) {
     get_user_dir(dst, dst_size, "XDG_DATA_HOME", ".local/share/discadia/games");
 }
 
