@@ -4,8 +4,8 @@ discadia
 build/
 
 # Dipendenze di terze parti
-third_party/cJSON/cJSON.c
-third_party/cJSON/cJSON.h
+# NOTA: cJSON è vendorizzato (v1.7.18, MIT) perché il progetto deve
+# compilare anche offline. scripts/fetch-deps.sh può aggiornarlo.
 
 # File di sistema e IDE
 .DS_Store
