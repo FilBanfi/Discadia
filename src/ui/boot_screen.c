@@ -12,6 +12,7 @@
 #include "i18n/locale.h"
 #include "log.h"
 
+#include "util/math_util.h" /* M_PI fallback for strict c11 */
 #include <math.h>
 #include <string.h>
 

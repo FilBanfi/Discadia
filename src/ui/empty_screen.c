@@ -8,6 +8,7 @@
 #include "i18n/locale.h"
 #include "ui/animation.h"
 
+#include "util/math_util.h" /* M_PI fallback + helpers (strict c11 hides M_PI) */
 #include <math.h>
 #include <SDL.h>
 

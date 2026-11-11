@@ -11,6 +11,7 @@
 #include "engine/launcher.h"
 #include "i18n/locale.h"
 #include "input/input.h"
+#include "util/math_util.h" /* M_PI fallback for strict c11 */
 
 static void launch_enter(app *a)
 {
