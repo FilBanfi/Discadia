@@ -68,6 +68,7 @@ typedef struct {
         int  icon_shadow;
         int  selection_glow;
         int  scanline_overlay;
+        int  crt_curve;            /* vignette-style screen curvature */
         char frame_overlay[256];   /* relative path or empty */
     } effects;
 
