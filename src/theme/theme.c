@@ -53,6 +53,7 @@ void theme_set_defaults(discadia_theme *theme) {
     theme->animations.selection_scale_ms = 200;
     theme->animations.fade_transition_ms = 300;
 
+    theme->effects.enabled = 1;
     theme->effects.icon_shadow = 1;
     theme->effects.selection_glow = 1;
     theme->effects.scanline_overlay = 0;

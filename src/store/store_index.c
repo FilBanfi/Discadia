@@ -21,6 +21,7 @@
 #include "log.h"
 
 #include <string.h>
+#include <stdlib.h> /* free() on parsed strings */
 
 /* Copy the best available localized string for `base` ("description"). */
 static void pick_localized(discadia_json *obj, const char *base,
@@ -44,7 +45,7 @@ int store_index_parse(const char *json_text, store_model *out)
     store_model_clear(out);
 
     discadia_json *root = json_parse(json_text);
-    if (!root) { LOG_W("store: index JSON parse failed"); return -1; }
+    if (!root) { LOG_WARN("store: index JSON parse failed"); return -1; }
 
     str_safe_copy(out->index_version,
                   json_get_string_or(root, "version", "0"),
@@ -88,7 +89,7 @@ int store_index_parse(const char *json_text, store_model *out)
     }
 
     json_free(root);
-    LOG_I("store: index parsed, %d packages (v%s)",
+    LOG_INFO("store: index parsed, %d packages (v%s)",
           out->count, out->index_version);
     return 0;
 }
@@ -96,7 +97,7 @@ int store_index_parse(const char *json_text, store_model *out)
 int store_index_parse_file(const char *path, store_model *out)
 {
     char *text = fs_read_file(path, NULL);
-    if (!text) { LOG_W("store: cannot read index %s", path); return -1; }
+    if (!text) { LOG_WARN("store: cannot read index %s", path); return -1; }
     int rc = store_index_parse(text, out);
     free(text);
     return rc;

@@ -128,6 +128,7 @@ int theme_parse_json(discadia_theme *theme, const char *theme_json_path) {
     /* visual effects */
     discadia_json *fx = json_get(root, "visual_effects");
     if (fx != NULL) {
+        theme->effects.enabled = json_get_bool_or(fx, "enabled", theme->effects.enabled);
         theme->effects.icon_shadow = json_get_bool_or(fx, "icon_shadow", theme->effects.icon_shadow);
         theme->effects.selection_glow = json_get_bool_or(fx, "selection_glow", theme->effects.selection_glow);
         theme->effects.scanline_overlay = json_get_bool_or(fx, "scanline_overlay", theme->effects.scanline_overlay);

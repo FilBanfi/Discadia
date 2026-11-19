@@ -65,6 +65,7 @@ typedef struct {
     } animations;
 
     struct {
+        int  enabled;              /* master switch for post-processing effects */
         int  icon_shadow;
         int  selection_glow;
         int  scanline_overlay;
