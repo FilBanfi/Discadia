@@ -1,4 +1,5 @@
 #include "input/input.h"
+#include "util/string_util.h"
 #include "input/input_mapping.h"
 #include "input/input_hotplug.h"
 #include "log.h"
@@ -105,6 +106,27 @@ static void set_down(int action, int is_down, float dt_ms)
     if (is_down) g_actions[action].hold_ms += dt_ms;
 }
 
+/* ---- remap-screen capture support ---------------------------------
+ * When g_capture_active is set, pump_event records the *name* of the
+ * first physical button press it sees instead of driving actions. The
+ * remap screen polls input_capture_next_button() each frame. */
+static int   g_capture_active;
+static char  g_capture_name[32];
+
+void input_capture_begin(void)  { g_capture_active = 1; g_capture_name[0] = '\0'; }
+void input_capture_end(void)    { g_capture_active = 0; }
+
+/* Returns the captured button name and clears it, or NULL when nothing
+ * has been pressed yet since input_capture_begin(). */
+const char *input_capture_next_button(void)
+{
+    if (!g_capture_active || !g_capture_name[0]) return NULL;
+    static char out[32];
+    str_safe_copy(out, g_capture_name, sizeof(out));
+    g_capture_name[0] = '\0';
+    return out;
+}
+
 /* Pump one SDL event into the action states. Shared by input_poll(). */
 static void pump_event(const SDL_Event *ev, float dt_ms)
 {
@@ -130,6 +152,8 @@ static void pump_event(const SDL_Event *ev, float dt_ms)
          * bookkeeping forever. */
         const int repeat = (ev->type == SDL_KEYDOWN && ev->key.repeat);
         const char *name = input_event_to_button_name(ev);
+        if (g_capture_active && ev->type == SDL_KEYDOWN && !repeat && name)
+            str_safe_copy(g_capture_name, name, sizeof(g_capture_name));
         int is_down = (ev->type == SDL_KEYDOWN);
         if (name && strcmp(name, FIXED_QUIT_KEY) == 0)
         {
@@ -153,6 +177,8 @@ static void pump_event(const SDL_Event *ev, float dt_ms)
     case SDL_CONTROLLERBUTTONUP:
     {
         const char *name = input_event_to_button_name(ev);
+        if (g_capture_active && ev->type == SDL_CONTROLLERBUTTONDOWN && name)
+            str_safe_copy(g_capture_name, name, sizeof(g_capture_name));
         if (name)
             set_down(action_for_button_name(name),
                      ev->type == SDL_CONTROLLERBUTTONDOWN, dt_ms);
