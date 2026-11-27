@@ -8,6 +8,7 @@
 #include "util/string_util.h"
 
 #include <string.h>
+#include <strings.h>   /* strcasecmp (POSIX) */
 #include <ctype.h>
 
 static void path_extension_safe(char *dst, size_t size, const char *path)

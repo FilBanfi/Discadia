@@ -14,6 +14,7 @@
 #include "settings/settings_store.h"
 #include "audio/audio.h"
 #include "log.h"
+#include "util/string_util.h"
 
 #include <string.h>
 

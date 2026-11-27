@@ -5,6 +5,7 @@
  */
 
 #include "audio/audio.h"
+#include "log.h"
 #include "audio/sound_cache.h"
 
 #include <SDL.h>
