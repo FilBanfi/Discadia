@@ -82,5 +82,17 @@
   "action_left": "Sinistra",
   "action_menu": "Menu",
   "action_right": "Destra",
-  "action_up": "Su"
+  "action_up": "Su",
+  "boot_loading": "Caricamento...",
+  "error_incompatible": "Non compatibile con questo hardware",
+  "error_launch_failed": "Avvio di {engine} fallito",
+  "error_manifest": "Manifest del pacchetto non valido",
+  "error_network": "Errore di rete - controlla la connessione",
+  "no_description": "Nessuna descrizione disponibile",
+  "press_confirm_retry": "Premi A per riprovare",
+  "reinstall": "Reinstalla",
+  "store_error_title": "Errore Store",
+  "store_incompatible": "Incompatibile",
+  "store_loading": "Recupero indice store...",
+  "store_offline_cache": "Dati in cache (offline)"
 }

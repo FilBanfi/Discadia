@@ -20,7 +20,7 @@ static int s_selected;
 static int s_capturing;    /* 1 = waiting for a physical button */
 
 static void ir_enter(app *a) { (void)a; s_capturing = 0; }
-static void ir_leave(app *a) { s_capturing = 0; input_capture_end(); }
+static void ir_leave(app *a) { (void)a; s_capturing = 0; input_capture_end(); }
 
 static void ir_update(app *a, float dt_ms, const frame_input *in,
                       nav_request_t *out_nav)
