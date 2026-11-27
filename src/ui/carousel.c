@@ -36,17 +36,28 @@ void carousel_jump(app *a, int to_last)
     app_play_sound(a, "navigate");
 }
 
+/* Carousel easing time constant: honors both the theme toggle and the
+ * global user setting (settings.animations_enabled). Returns <=0 when
+ * animations should be skipped entirely. */
+static float carousel_tau(app *a)
+{
+    discadia_theme *t = app_theme(a);
+    settings_model *s = app_settings(a);
+    if (!t || !t->animations.enabled || (s && !s->animations_enabled))
+        return -1.f;
+    return (float)(t->animations.scroll_speed_ms > 0
+                       ? t->animations.scroll_speed_ms : 220);
+}
+
 void carousel_update(app *a, float dt_ms, const frame_input *in, int *nav_out)
 {
     (void)nav_out;
-    discadia_theme *t = app_theme(a);
     float target = (float)app_selected_item(a);
     float pos = app_carousel_pos(a);
 
-    if (t->animations.enabled)
+    float tau = carousel_tau(a);
+    if (tau > 0.f)
     {
-        float tau = (float)(t->animations.scroll_speed_ms > 0
-                                ? t->animations.scroll_speed_ms : 220);
         /* shortest-path smoothing across wrap: keep pos continuous */
         pos = anim_approach(pos, target, dt_ms, tau);
         if (fabsf(pos - target) < 0.002f) pos = target;
@@ -99,7 +110,7 @@ void carousel_draw(app *a, float dt_ms)
         /* scale factor eased from selection proximity */
         float prox = 1.f - anim_clamp(fabsf(d), 0.f, 1.f);
         float scale = 0.75f + 0.25f * anim_ease_smooth(prox);
-        if (is_sel && t->animations.enabled)
+        if (is_sel && carousel_tau(a) > 0.f)
         {
             float p = anim_clamp(dt_ms /
                         (float)(t->animations.selection_scale_ms > 0

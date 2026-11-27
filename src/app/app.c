@@ -492,6 +492,52 @@ void app_run(app *a)
         cur = app_screen_table(a->screen);
         if (cur && cur->draw) cur->draw(a, dt);
 
+        /* ---- theme post-processing effects --------------------------
+         * Applied after the screen has drawn but before toasts/fade so
+         * HUD elements stay crisp on top of the CRT look. Everything is
+         * gated by theme.effects.enabled (master switch in theme.json).
+         * The global "animations" setting does NOT disable these: they
+         * are static visual filters, not motion. */
+        discadia_theme *th = &a->theme;
+        if (th->effects.enabled)
+        {
+            SDL_Renderer *sr = renderer_sdl(a->ren);
+
+            /* Scanline overlay: dark 1px lines every N rows. Spacing is
+             * derived from panel height (~0.2% lines) for a subtle CRT
+             * feel that scales with resolution. */
+            if (th->effects.scanline_overlay)
+                renderer_scanlines(a->ren, 3, 28);
+
+            /* CRT curvature approximation: vignette-style darkening of
+             * the screen edges, drawn as nested translucent rounded
+             * frames. Cheap and effective without shaders. */
+            if (th->effects.crt_curve)
+            {
+                SDL_Color black = {0, 0, 0, 255};
+                int steps = 6;
+                for (int i = 0; i < steps; i++) {
+                    int inset = i * (a->layout.sw / 48 + 1);
+                    black.a = (Uint8)(10 + i * 6);
+                    renderer_outline_rounded(a->ren, inset, inset,
+                                             a->layout.sw - 2 * inset,
+                                             a->layout.sh - 2 * inset,
+                                             a->layout.sw / 8, black,
+                                             a->layout.sw / 48 + 1);
+                }
+                (void)sr;
+            }
+
+            /* Frame overlay image: bezel PNG shipped inside the theme,
+             * stretched to the full screen via the texture cache. */
+            char frame_path[512];
+            theme_frame_overlay_path(th, frame_path, sizeof(frame_path));
+            if (frame_path[0])
+                texture_cache_draw_fit(a->tcache, frame_path,
+                                       (SDL_Rect){0, 0, a->layout.sw,
+                                                  a->layout.sh}, NULL);
+        }
+
         /* Transition fade-to-black overlay. */
         float fa = app_state_fade_alpha();
         if (fa > 0.f)

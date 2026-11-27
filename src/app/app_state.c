@@ -16,7 +16,10 @@ static app_screen_t s_home_return_target = SCREEN_HOME;
 void app_state_begin_fade(app *a)
 {
     discadia_theme *t = app_theme(a);
-    if (t && t->animations.enabled)
+    settings_model *s = app_settings(a);
+    /* Global "animations" user switch wins over the theme: when the
+     * user disables animations, transitions are instant everywhere. */
+    if (t && s && t->animations.enabled && s->animations_enabled)
         s_fade_ms = (float)t->animations.fade_transition_ms;
     else
         s_fade_ms = 0.f;

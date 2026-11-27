@@ -64,6 +64,13 @@ int input_window_close_requested(void);
  * so hotplug and window-close keep working). */
 void input_pump_pending_events(void);
 
+/* Remap-screen capture mode: while active, pump_event records the first
+ * physical button press (gamepad or key) which the remap screen reads
+ * with input_capture_next_button(). Actions still fire normally. */
+void input_capture_begin(void);
+void input_capture_end(void);
+const char *input_capture_next_button(void);   /* NULL until pressed */
+
 /* Translate a raw SDL event into the physical button name used by the
  * mapping files ("A", "B", "START", "DPAD_LEFT", "KEY_RETURN", ...).
  * Returns NULL when the event is not mappable. Used by the remap screen. */

@@ -1,1 +1,10 @@
-{\n  "id": "system_browser",\n  "title": "Browser",\n  "description": "Naviga su Internet",\n  "platform": "System",\n  "engine": "native",\n  "game_file": "/usr/bin/firefox",\n  "thumbnail": "thumbnail.jpg",\n  "is_app": true\n}
+{
+  "id": "system_browser",
+  "title": "Browser",
+  "description": "Naviga su Internet",
+  "platform": "System",
+  "engine": "native",
+  "game_file": "/usr/bin/firefox",
+  "thumbnail": "thumbnail.jpg",
+  "is_app": true
+}

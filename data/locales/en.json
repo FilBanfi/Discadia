@@ -82,5 +82,17 @@
   "action_left": "Left",
   "action_menu": "Menu",
   "action_right": "Right",
-  "action_up": "Up"
+  "action_up": "Up",
+  "boot_loading": "Loading...",
+  "error_incompatible": "Not compatible with this hardware",
+  "error_launch_failed": "Failed to launch {engine}",
+  "error_manifest": "Invalid package manifest",
+  "error_network": "Network error - check connection",
+  "no_description": "No description available",
+  "press_confirm_retry": "Press A to retry",
+  "reinstall": "Reinstall",
+  "store_error_title": "Store Error",
+  "store_incompatible": "Incompatible",
+  "store_loading": "Fetching store index...",
+  "store_offline_cache": "Showing cached data (offline)"
 }

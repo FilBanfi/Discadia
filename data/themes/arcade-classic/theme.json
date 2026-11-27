@@ -44,6 +44,7 @@
     "cd_insert_animation": "slide_from_top"
   },
   "visual_effects": {
+    "enabled": true,
     "icon_shadow": true,
     "selection_glow": true,
     "scanline_overlay": false,

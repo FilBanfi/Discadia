@@ -12,6 +12,8 @@
 #include "i18n/locale.h"
 #include "log.h"
 
+#include "util/math_util.h"
+#include "util/string_util.h"
 #include <math.h>
 #include <string.h>
 

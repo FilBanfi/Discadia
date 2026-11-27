@@ -43,9 +43,11 @@ float anim_ease_out_quad(float t)
     return 1.f - (1.f - t) * (1.f - t);
 }
 
-float anim_pingpong(float t01)
+float anim_pingpong_ms(float age_ms, float period_ms)
 {
-    /* triangle wave in [0..1): 0->1->0 over one period of t01*2 */
-    float p = anim_clamp(t01, 0.f, 1.f);
-    return p < 0.5f ? p * 2.f : 2.f - p * 2.f;
+    /* Triangle wave: ramps 0->1->0 as age advances every period_ms.
+     * Uses fmodf so age_ms may be any unbounded elapsed-time value. */
+    if (period_ms <= 0.f) return 0.f;
+    float t = fmodf(age_ms, 2.f * period_ms) / period_ms;   /* 0..2 */
+    return t < 1.f ? t : 2.f - t;                            /* 0..1..0 */
 }
